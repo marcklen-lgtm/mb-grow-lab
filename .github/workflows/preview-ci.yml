@@ -1,0 +1,29 @@
+name: Preview CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches-ignore: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Require complete application source
+        run: test -f package.json || (echo 'BLOCKED: complete MB Grow Lab source is not present in this repository.' && exit 1)
+      - name: Install dependencies
+        run: npm ci
+      - name: TypeScript check when configured
+        run: |
+          if node -e "process.exit(require('./package.json').scripts?.typecheck ? 0 : 1)"; then npm run typecheck; else echo 'No typecheck script; skipped'; fi
+      - name: Build
+        run: npm run build
