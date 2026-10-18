@@ -17,7 +17,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
       - name: Require complete application source
         run: test -f package.json || (echo 'BLOCKED: complete MB Grow Lab source is not present in this repository.' && exit 1)
       - name: Install dependencies
